@@ -1,0 +1,56 @@
+#card {
+  background-image: url("bg.png");
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-size: 120px;
+  margin: 60px auto auto auto; /* top right bottom left */
+  width: 800px;
+  height: 450px;
+  background-color: white;
+  border: 1px solid white;
+} 
+
+#name {
+  text-align: center;
+  padding: 0 60px 0 0;
+	margin: 130px auto;
+	font-size: 90px;
+	font-family: "Exo", sans-serif;
+	font-weight: bold;
+	letter-spacing: -4px;
+}
+
+#surname {
+  color: #e82121; 
+}
+
+/* Fade out. Transition from email to name */
+
+#domain {
+  opacity: 0;
+  transition: opacity 0.5s linear;
+}
+
+#separator {
+  opacity: 0;
+  font-size: 40px;
+  transition: font-size 0.5s linear;
+}
+
+/* Fade in. Transition from name to email */
+
+#name:hover {
+  text-transform: lowercase;
+	letter-spacing: 0px;
+}
+
+#name:hover > #domain {
+  opacity: 0.7;
+  transition: opacity 1.0s ease-out; 
+}
+
+#name:hover > #separator {
+  opacity: 0.7;
+  font-size: inherit;
+  transition: opacity 1.0s ease-out;
+}
