@@ -115,7 +115,7 @@
       });
 
       $("#doublingRate").keyup(function () {
-        g = Math.exp(Math.log(2) / doublingRate());
+        g = 2 ** (1 / doublingRate());
         growthRate(g.toFixed(4));
         update();
       });
