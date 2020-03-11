@@ -69,8 +69,8 @@
         return Array(end - start + 1).fill().map((_, idx) => start + idx)
       }
 
-      var doublingRate = $("#doublingRate").val.bind($("#doublingRate")); // growth rate
-      var growthRate = $("#growthRate").val.bind($("#growthRate")); // doubling rate
+      var doublingRate = $("#doublingRate").val.bind($("#doublingRate"));
+      var growthRate = $("#growthRate").val.bind($("#growthRate"));
       var initialCount = $("#initialCount").val.bind($("#initialCount"));
       var days = function() { return this.range(1, $("#numberOfDays").val()) };
 
