@@ -19,33 +19,48 @@
         <h1 class="display-4">Exponential Growth Visualiser</h1>
         <p class="lead">This is a simple tool to visuale exponential growth.</p>
       </div>
+
       <form>
-        <div class="form-group">
-          <label for="initialCount">Initial count</label>
-          <input type="number" class="form-control" id="initialCount" aria-describedby="initialCountHelp" value="10">
-          <small id="initialCountHelp" class="form-text text-muted">The start of exponential growth.</small>
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="initialCount">Initial count</label>
+              <input type="number" class="form-control" id="initialCount" aria-describedby="initialCountHelp"
+                value="10">
+              <small id="initialCountHelp" class="form-text text-muted">The start of exponential growth.</small>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="numberOfDays">Number of days</label>
+              <input type="number" class="form-control" id="numberOfDays" aria-describedby="numberOfDaysHelp"
+                value="50">
+              <small id="numberOfDaysHelp" class="form-text text-muted">Number of days into the future.</small>
+            </div>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="numberOfDays">Number of days</label>
-          <input type="number" class="form-control" id="numberOfDays" aria-describedby="numberOfDaysHelp" value="50">
-          <small id="numberOfDaysHelp" class="form-text text-muted">Number of days into the future.</small>
-        </div>
-
-        <div class="form-group">
-          <label for="doublingRate">Doubling rate in days</label>
-          <input type="number" class="form-control" id="doublingRate" aria-describedby="doublingRateHelp" min="1" value="4">
-          <small id="doublingRateHelp" class="form-text text-muted">Number of days to double the count.</small>
-        </div>
-
-        <div class="form-group">
-          <label for="growthRate">Growth rate per day</label>
-          <input type="number" class="form-control" id="growthRate" aria-describedby="growthRateHelp" min="1" value="1.1892">
-          <small id="growthRateHelp" class="form-text text-muted">Growth rate per day.</small>
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="doublingRate">Doubling rate in days</label>
+              <input type="number" class="form-control" id="doublingRate" aria-describedby="doublingRateHelp" min="1"
+                value="4">
+              <small id="doublingRateHelp" class="form-text text-muted">Number of days to double the count.</small>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="growthRate">Growth rate per day</label>
+              <input type="number" class="form-control" id="growthRate" aria-describedby="growthRateHelp" min="1"
+                value="1.1892">
+              <small id="growthRateHelp" class="form-text text-muted">Growth rate per day.</small>
+            </div>
+          </div>
         </div>
       </form>
-      <div id="graph">
-      </div>
+
+      <div id="graph"></div>
     </div>
 
 
