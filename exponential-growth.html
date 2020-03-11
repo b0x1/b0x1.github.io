@@ -36,7 +36,7 @@
             <div class="form-group">
               <label for="numberOfDays">Number of days</label>
               <input type="number" class="form-control" id="numberOfDays" aria-describedby="numberOfDaysHelp"
-                value="50">
+                value="60">
               <small id="numberOfDaysHelp" class="form-text text-muted">Number of days into the future.</small>
             </div>
           </div>
@@ -71,18 +71,18 @@
         return Array(end - start + 1).fill().map((_, idx) => start + idx)
       }
 
-      var doublingRate = $("#doublingRate").val(); // growth rate
-      var growthRate = $("#growthRate").val(); // doubling rate
-      var initialCount = $("#initialCount").val();
-      var days = this.range(1, $("#numberOfDays").val());
+      var doublingRate = $("#doublingRate").val.bind($("#doublingRate")); // growth rate
+      var growthRate = $("#growthRate").val.bind($("#growthRate")); // doubling rate
+      var initialCount = $("#initialCount").val.bind($("#initialCount"));
+      var days = function() { return this.range(1, $("#numberOfDays").val()) };
 
       function growth(x) {
-        return x.map(i => initialCount * growthRate ** i);
+        return x.map(i => initialCount() * growthRate() ** i);
       }
 
       var data = [{
-        x: days,
-        y: growth(days),
+        x: days(),
+        y: growth(days()),
         type: 'scatter'
       }];
 
@@ -103,32 +103,28 @@
       };
 
       function update() {
-        data[0].x = range(1, $("#numberOfDays").val())
+        data[0].x = days();
         data[0].y = growth(data[0].x);
         Plotly.update(graphDiv, data, layout);
       }
 
       $("#initialCount").keyup(function () {
-        initialCount = $("#initialCount").val();
         update();
       });
 
       $("#numberOfDays").keyup(function () {
-        days = range(1, $("#numberOfDays").val());
         update();
       });
 
       $("#doublingRate").keyup(function () {
-        doublingRate = $("#doublingRate").val();
-        growthRate = Math.exp(Math.log(2) / doublingRate);
-        $("#growthRate").val(growthRate.toFixed(4));
+        g = Math.exp(Math.log(2) / doublingRate());
+        growthRate(g.toFixed(4));
         update();
       });
 
       $("#growthRate").keyup(function () {
-        growthRate = $("#growthRate").val();
-        doublingRate = Math.log(2) / Math.log(growthRate);
-        $("#doublingRate").val(doublingRate.toFixed(4));
+        d = Math.log(2) / Math.log(growthRate());
+        doublingRate(d.toFixed(4));
         update();
       });
 
