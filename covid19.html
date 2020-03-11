@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Pandemic Calculator</title>
+  <meta name="author" content="Xia Boyang">
+  <meta name="description" content="Pandemic Calculator.">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <main>
+    <div class="container">
+      <div class="jumbotron">
+        <h1 class="display-4">Pandemic Calculator</h1>
+        <p class="lead">Model probably wrong. Take the values with lots of salt.</p>
+      </div>
+
+      <form>
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="initialCount">Initial count</label>
+              <input type="number" class="form-control" id="initialCount" aria-describedby="initialCountHelp"
+                value="10">
+              <small id="initialCountHelp" class="form-text text-muted">The start of exponential growth.</small>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="numberOfDays">Number of days</label>
+              <input type="number" class="form-control" id="numberOfDays" aria-describedby="numberOfDaysHelp"
+                value="60">
+              <small id="numberOfDaysHelp" class="form-text text-muted">Number of days into the future.</small>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="rNaught">Initial R0</label>
+              <input type="number" class="form-control" id="rNaught" aria-describedby="rNaughtHelp" min="1"
+                step="0.01" value="2.35">
+              <small id="rNaughtHelp" class="form-text text-muted">Average number of people becoming infected from one contagious person.</small>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="generationTime">Generation time</label>
+              <input type="number" class="form-control" id="generationTime" aria-describedby="generationTimeHelp" min="1"
+                step="0.01" value="5">
+              <small id="generationTimeHelp" class="form-text text-muted">Generation time describes in combination with R0 how fast a disease spreads.</small>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="form-group">
+              <label for="growthRate">Growth rate per day</label>
+              <input type="number" class="form-control" id="growthRate" aria-describedby="growthRateHelp" min="1"
+                step="0.0001" readonly>
+              <small id="growthRateHelp" class="form-text text-muted">Growth rate per day.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="recoveryTime">Recovery time in days</label>
+              <input type="number" class="form-control" id="recoveryTime" aria-describedby="recoveryTimeHelp"
+                step="0.01" value="14">
+              <small id="recoveryTimeHelp" class="form-text text-muted">Average time for someone to recover from
+                infection. Set to 0 for no recovery.
+              </small>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="mortalityRate">Mortality rate</label>
+              <input type="number" class="form-control" id="mortalityRate" aria-describedby="mortalityRateHelp" max="1"
+                step="0.0001" value="0.015">
+              <small id="mortalityRateHelp" class="form-text text-muted">Mortality rate between 0 and 1.</small>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="populationSize">Population size</label>
+              <input type="number" class="form-control" id="populationSize" aria-describedby="populationSizeHelp"
+                min="1" step="1" value="8000000">
+              <small id="populationSizeHelp" class="form-text text-muted">Model assumes no re-infection.</small>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div id="graph"></div>
+    </div>
+
+
+    <script>
+      var initialCount = $("#initialCount").val.bind($("#initialCount"));
+      $("#initialCount").keyup(function () { update(); });
+
+      var recoveryTime = $("#recoveryTime").val.bind($("#recoveryTime"));
+      $("#recoveryTime").keyup(function () { update();});
+
+      var mortalityRate = $("#mortalityRate").val.bind($("#mortalityRate"));
+      $("#mortalityRate").keyup(function () { update(); });
+
+      var populationSize = $("#populationSize").val.bind($("#populationSize"));
+      $("#populationSize").keyup(function () { update(); });
+
+      var days = function () { return this.range(1, $("#numberOfDays").val()) };
+      $("#numberOfDays").keyup(function () { update(); });
+
+      var rNaught = $("#rNaught").val.bind($("#rNaught"));
+      $("#rNaught").keyup(function () { 
+        updateGrowthRate();
+        update(); 
+      });
+
+      var generationTime = $("#generationTime").val.bind($("#generationTime"));
+      $("#generationTime").keyup(function () { 
+        updateGrowthRate();  
+        update(); 
+      });
+
+      var growthRate = $("#growthRate").val.bind($("#growthRate")); 
+
+      function updateGrowthRate() {
+        result = Math.exp(Math.log(rNaught())/generationTime());
+        growthRate(result);
+      }
+
+      function range(start, end) {
+        return Array(end - start + 1).fill().map((_, idx) => start + idx)
+      }
+      
+      function data() {
+        console.debug("Update data.");
+        var _days = days();
+        var _totalInfected = Number(initialCount());
+        var _infected = [Number(initialCount())];
+        var _death = [0];
+        var _recoveryTime = Number(recoveryTime());
+        var _rNaught = Number(rNaught());
+        var _generationTime = Number(generationTime());
+
+        for (d of _days) {
+          // var _newly_infected = _infected[d - 1] * Number(growthRate() - 1); // for sanity check
+          var _newly_infected = _infected[d - 1] * (_rNaught ** (1 / _generationTime) - 1);
+
+          var _recovered = (_recoveryTime > 0 ? _infected[d - 1] / _recoveryTime : 0);
+          _infected.push(_newly_infected + _infected[d - 1] - _recovered);
+          _totalInfected += _newly_infected;
+          _death.push(_totalInfected * Number(mortalityRate()));
+        }
+
+        var infected = {
+          x: _days,
+          y: _infected,
+          type: 'scatter',
+          name: "Infected"
+        };
+
+        var death = {
+          x: _days,
+          y: _death,
+          type: 'scatter',
+          name: "Death"
+        };
+
+        return [infected, death];
+      }
+
+      var graphDiv = document.getElementById('graph')
+
+      var layout = {
+        // title: 'Exponential Growth',
+        xaxis: {
+          title: 'Day',
+          showgrid: false,
+          zeroline: false
+        },
+        yaxis: {
+          title: 'Count',
+          showline: false,
+          zeroline: false,
+        }
+      };
+
+      function update() {
+        console.debug("Update graph due to user input.")
+        debug = data();
+        Plotly.newPlot(graphDiv, debug, layout);
+      }
+
+      updateGrowthRate();
+      Plotly.newPlot(graphDiv, data(), layout);
+    </script>
+  </main>
+</body>
+
+</html>
