@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Pandemic Calculator</title>
+  <title>Pandemic Modelling</title>
   <meta name="author" content="Xia Boyang">
-  <meta name="description" content="Pandemic Calculator.">
+  <meta name="description" content="A simple and unpredictive model for pandemic.">
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -18,7 +18,7 @@
   <main>
     <div class="container">
       <div class="jumbotron">
-        <h1 class="display-4">Pandemic Calculator</h1>
+        <h1 class="display-4">Pandemic Modelling</h1>
         <p class="lead">A very, very simple and unpredictive model. Only to illustrate the scale of the danger.</p>
       </div>
 
@@ -87,7 +87,7 @@
           <div class="col">
             <div class="form-group">
               <label for="mortalityRate">Mortality rate</label>
-              <input type="number" class="form-control" id="mortalityRate" aria-describedby="mortalityRateHelp" max="1"
+              <input type="number" class="form-control" id="mortalityRate" aria-describedby="mortalityRateHelp" min="0" max="1"
                 step="0.0001" value="0.015">
               <small id="mortalityRateHelp" class="form-text text-muted">Mortality rate between 0 and 1.</small>
             </div>
@@ -159,26 +159,26 @@
 
       function data() {
         console.debug("Update data.");
-        var _days = range(1, numberOfDays());
-        var _accumulatedDeath = [0];
-        var _generationTime = Number(generationTime());
-        var _infected = [Number(initialCount())];
-        var _recoveryTime = Number(recoveryTime());
-        var _rNaught = Number(rNaught());
-        var _totalInfected = Number(initialCount());
-        var _populationSize = Number(populationSize())
-        var _totalRecovered = 0;
+        const _generationTime = Number(generationTime());
+        const _rNaught = Number(rNaught());
+        const _recoveryTime = Number(recoveryTime());
+        const _days = range(1, numberOfDays());
+        const _populationSize = Number(populationSize())
+        _accumulatedDeath = [0];
+        _infected = [Number(initialCount())];
+        _totalInfected = Number(initialCount());
+        _totalRecovered = 0;
 
 
         for (d of _days) {
           // var _newlyInfected = _infected[d - 1] * (Number(growthRate()) - 1); // for sanity check
-          var _infectable = _populationSize - _totalRecovered - _totalInfected;
-          var _effectiveGrowth = (_rNaught * _infectable / _populationSize) ** (1 / _generationTime);
-          var _newlyInfected = Math.max(0, _infected[d - 1] * (_effectiveGrowth - 1));
-          var _newlyRecovered = (_recoveryTime > 0 ? _infected[d - 1] / _recoveryTime : 0);
+          const _infectable = _populationSize - _totalRecovered - _infected[d - 1];
+          const _effectiveGrowth = (_rNaught * _infectable / _populationSize) ** (1 / _generationTime);
+          const _newlyInfected = Math.max(0, _infected[d - 1] * (_effectiveGrowth - 1));
+          const _newlyRecovered = (_recoveryTime > 0 ? _infected[d - 1] / _recoveryTime : 0);
           _infected.push(_newlyInfected + _infected[d - 1] - _newlyRecovered);
-          _totalInfected += _newlyInfected;
-          _totalRecovered += _newlyRecovered;
+          _totalInfected = Math.min(_populationSize, _totalInfected + _newlyInfected);
+          _totalRecovered = Math.min(_populationSize, _totalRecovered + _newlyRecovered);
           _accumulatedDeath.push(_totalInfected * Number(mortalityRate()));
         }
 
