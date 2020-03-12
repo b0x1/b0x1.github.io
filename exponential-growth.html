@@ -106,13 +106,8 @@
         Plotly.update(graphDiv, data, layout);
       }
 
-      $("#initialCount").keyup(function () {
-        update();
-      });
-
-      $("#numberOfDays").keyup(function () {
-        update();
-      });
+      $("#initialCount").keyup(update);
+      $("#numberOfDays").keyup(update);
 
       $("#doublingRate").keyup(function () {
         g = 2 ** (1 / doublingRate());
